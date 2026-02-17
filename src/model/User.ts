@@ -11,6 +11,7 @@ const MessageSchema: Schema<Message> = new Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
+// User interface extends Document to include Mongoose document properties
 export interface User extends Document {
   username: string;
   email: string;

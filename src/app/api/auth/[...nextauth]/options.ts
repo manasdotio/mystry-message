@@ -7,12 +7,15 @@ import User from "@/model/User";
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
-      id: "credentails",
+      id: "credentials",
       name: "Credentials",
+
+      // Define the fields that will be submitted in the login form
       credentials: {
-        email: { label: "Email", type: "text" },
+        identifier: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
+      // The authorize function is called when a user tries to log in with credentials
       async authorize(credentials: any): Promise<any> {
         await dbConnect();
         try {
@@ -39,25 +42,33 @@ export const authOptions: NextAuthOptions = {
             throw new Error("Incorrect password");
           }
         } catch (err: any) {
-          throw new Error(err);
+          throw new Error(err.message);
         }
       },
     }),
   ],
   callbacks: {
-      async jwt({ token, user }) {
-        if (user) {
-            token._id = user._id?.toString();
-            
-        }
-        return token;
-      },
+    async jwt({ token, user }) {
+      if (user) {
+        token._id = user._id?.toString();
+        token.isVerified = user.isVerified;
+        token.isAcceptingMessage = user.isAcceptingMessage;
+        token.username = user.username;
+      }
+      return token;
+    },
     async session({ session, token }) {
+      if (token) {
+        session.user._id = token._id;
+        session.user.isVerified = token.isVerified;
+        session.user.isAcceptingMessage = token.isAcceptingMessage;
+        session.user.username = token.username;
+      }
       return session;
     },
   },
   pages: {
-    signIn: "/signin",
+    signIn: "/sign-in",
   },
   session: {
     strategy: "jwt",
