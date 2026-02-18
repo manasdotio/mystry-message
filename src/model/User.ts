@@ -20,7 +20,7 @@ export interface User extends Document {
   verifyCodeExpiry: Date;
   isVerified: boolean;
   isAcceptingMessage: boolean;
-  Message: Message[]; // Array of Message subdocuments
+  Messages: Message[]; // Array of Message subdocuments
 }
 
 const UserSchema: Schema<User> = new Schema({
@@ -57,7 +57,7 @@ const UserSchema: Schema<User> = new Schema({
     type: Boolean,
     default: true,
   },
-  Message: [MessageSchema], // Embed Message subdocuments
+  Messages: [MessageSchema], // Embed Message subdocuments
 });
 
 const UserModel =
