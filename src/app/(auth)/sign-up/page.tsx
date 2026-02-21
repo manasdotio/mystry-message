@@ -1,6 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import {  useForm } from "react-hook-form";
 import * as z from "zod";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -137,7 +137,7 @@ const page = () => {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} name="password" />
+                    <Input type="password" {...field} name="password" placeholder="password" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
