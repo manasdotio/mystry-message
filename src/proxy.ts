@@ -9,21 +9,21 @@ export async function proxy(request: NextRequest) {
 
   // Get the URL of the incoming request
   const url = request.nextUrl;
+  const isAuthPage =
+    url.pathname === "/sign-in" ||
+    url.pathname === "/sign-up" ||
+    url.pathname.startsWith("/verify");
 
   // If the user is not authenticated, redirect to the sign-in page
-  if (
-    token &&
-    (url.pathname.startsWith("/sign-in") ||
-      url.pathname.startsWith("/sign-up") ||
-      url.pathname.startsWith("/verify") ||
-      url.pathname.startsWith("/"))
-  ) {
+  if (token && isAuthPage) {
     return NextResponse.redirect(new URL("/dashboard", request.url)); // Redirect authenticated users away from the sign-in page
   }
   // If the user is not authenticated and tries to access a protected route, redirect to the sign-in page
   if (!token && url.pathname.startsWith("/dashboard")) {
     return NextResponse.redirect(new URL("/sign-in", request.url)); // Redirect unauthenticated users to the sign-in page
   }
+
+  return NextResponse.next();
 }
 
 // Alternatively, you can use a default export:

@@ -3,7 +3,6 @@ import { authOptions } from "../auth/[...nextauth]/options";
 import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/model/User";
 import { User } from "next-auth";
-import mongoose from "mongoose";
 
 export async function GET(request: Request) {
   await dbConnect();
@@ -17,24 +16,26 @@ export async function GET(request: Request) {
       { status: 401 },
     );
   }
-  const userId = new mongoose.Types.ObjectId(user._id);
+
   try {
-    const user = await UserModel.aggregate([
-      { $match: { _id: userId } },
-      { $unwind: "$messages" }, // Unwind the messages array to get individual message documents
-      { $sort: { "messages.createdAt": -1 } }, // Sort messages by createdAt in descending order
-      { $group: { _id: "$_id", messages: { $push: "$messages" } } }, // Group back the messages into an array
-    ]);
-    if (!user || user.length === 0) {
+    const foundUser = await UserModel.findById(user._id).select("Messages");
+
+    if (!foundUser) {
       return Response.json(
         { success: false, message: "User not found" },
         { status: 404 },
       );
     }
+
+    const sortedMessages = [...(foundUser.Messages || [])].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+
     return Response.json(
       {
         success: true,
-        messages: user[0].messages,
+        messages: sortedMessages,
       },
       { status: 200 },
     );

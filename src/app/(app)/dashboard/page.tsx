@@ -1,6 +1,5 @@
 "use client";
 import { MessageCard } from "@/components/MessageCard";
-import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
@@ -43,7 +42,7 @@ const Page = () => {
   const fetchAcceptMessage = useCallback(async () => {
     setIsSwitchLoading(true);
     try {
-      const response = await axios.get<ApiResponse>("/api/accept-message");
+      const response = await axios.get<ApiResponse>("/api/accept-messages");
       setValue("acceptMessages", response.data.isAcceptingMessages ?? false);
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
@@ -69,8 +68,7 @@ const Page = () => {
       } catch (error) {
         const axiosError = error as AxiosError<ApiResponse>;
         toast.error(
-          axiosError.response?.data.message ||
-            "Failed to fetch message settings",
+          axiosError.response?.data.message || "Failed to fetch messages",
         );
       } finally {
         setIsLoading(false);
@@ -90,7 +88,7 @@ const Page = () => {
 
   const handleSwitchChange = async () => {
     try {
-      const response = await axios.post<ApiResponse>("/api/accept-message", {
+      const response = await axios.post<ApiResponse>("/api/accept-messages", {
         acceptMessages: !acceptMessages,
       });
       setValue("acceptMessages", !acceptMessages);
@@ -128,7 +126,6 @@ const Page = () => {
 
   return (
     <>
-      <Navbar />
       <div className="my-8 mx-4 md:mx-8 lg:mx-auto p-6 bg-white rounded w-full max-w-6xl">
         <h1 className="text-4xl font-bold mb-4">User Dashboard</h1>
 
