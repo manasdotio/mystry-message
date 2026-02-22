@@ -8,12 +8,27 @@ export async function sendVerificationEmail(
   verifyCode: string,
 ): Promise<ApiResponse> {
   try {
-    await resend.emails.send({
-      from: "onboarding@resend.dev",
+    if (!process.env.RESEND_API_KEY) {
+      return {
+        success: false,
+        message: "Email service is not configured (missing RESEND_API_KEY)",
+      };
+    }
+
+    const { error } = await resend.emails.send({
+      from: process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev",
       to: email,
       subject: "Mystry message|Verification code",
       react: VerificationEmail({ username, otp: verifyCode }),
     });
+
+    if (error) {
+      return {
+        success: false,
+        message: error.message || "Failed to send verification email",
+      };
+    }
+
     return {
       success: true,
       message: "Verification email sent successfully",
